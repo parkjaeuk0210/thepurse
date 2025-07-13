@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   description: '스마트한 카드 지출 관리 앱',
   manifest: '/manifest.json',
   themeColor: '#3b82f6',
+  icons: {
+    icon: '/favicon-32x32.png',
+    shortcut: '/favicon-32x32.png',
+    apple: '/icon.svg',
+  },
   viewport: {
     width: 'device-width',
     initialScale: 1,

@@ -20,7 +20,7 @@ export function SwipeableExpenseItem({ expense, card, onDelete, onEdit }: Swipea
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const longPressTimer = useRef<NodeJS.Timeout>()
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null)
   
   const category = CATEGORIES.find(cat => cat.id === expense.category)
   
