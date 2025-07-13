@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 95%;
+    --foreground: 240 10% 10%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    
+    --primary: 211 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 10% 10%;
+    
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 10% 10%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 211 100% 50%;
+    
+    --radius: 1rem;
+  }
+  
+  .dark {
+    --background: 240 10% 10%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 10%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 10%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 211 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 240 10% 20%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 10% 20%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 240 10% 20%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 211 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: 
+      radial-gradient(ellipse at top left, rgba(120, 119, 198, 0.3), transparent 50%),
+      radial-gradient(ellipse at top right, rgba(255, 119, 198, 0.3), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(120, 219, 255, 0.3), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(255, 176, 59, 0.3), transparent 50%);
+  }
+  
+  .dark body::before {
+    background-image: 
+      radial-gradient(ellipse at top left, rgba(120, 119, 198, 0.15), transparent 50%),
+      radial-gradient(ellipse at top right, rgba(255, 119, 198, 0.15), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(120, 219, 255, 0.15), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(255, 176, 59, 0.15), transparent 50%);
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+  
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .glass-hover {
+    @apply hover:bg-white/90 transition-all duration-200;
+  }
+  
+  .dark .glass {
+    background: rgba(30, 30, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .dark .glass-subtle {
+    background: rgba(30, 30, 30, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .apple-shadow {
+    box-shadow: 
+      0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 2px 4px rgba(0, 0, 0, 0.04),
+      0 8px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .apple-shadow-lg {
+    box-shadow: 
+      0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 4px 8px rgba(0, 0, 0, 0.04),
+      0 16px 32px rgba(0, 0, 0, 0.12);
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+}
+
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+  
+  .animate-fade-out {
+    animation: fade-out 0.3s ease-out forwards;
+  }
+  
+  /* Touch optimization */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Ensure buttons are clickable */
+  button, a, [role="button"] {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  /* Improve touch targets */
+  @media (pointer: coarse) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+  
+  /* Fix for iOS Safari */
+  button:active {
+    opacity: 0.8;
+  }
+}
