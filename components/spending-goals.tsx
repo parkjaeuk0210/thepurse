@@ -400,9 +400,20 @@ export function SpendingGoals({
                         <span className="text-muted-foreground">
                           {goal.type === 'save' ? '저축액' : '현재 지출'}
                         </span>
-                        <span className="font-medium">
-                          {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">
+                            {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
+                          </span>
+                          <span className={`text-xs font-semibold ${
+                            goal.isAchieved 
+                              ? 'text-green-500' 
+                              : goal.progress > 80 
+                                ? 'text-yellow-500' 
+                                : 'text-primary'
+                          }`}>
+                            ({Math.round(goal.progress)}%)
+                          </span>
+                        </div>
                       </div>
                       
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">

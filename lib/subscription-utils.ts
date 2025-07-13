@@ -1,4 +1,5 @@
 import { type Expense } from './types'
+import { generateId } from './id-generator'
 
 export function processSubscriptions(expenses: Expense[]): Expense[] {
   const today = new Date()
@@ -46,7 +47,7 @@ export function processSubscriptions(expenses: Expense[]): Expense[] {
     
     if (shouldCreateMonthly || shouldCreateYearly) {
       const newExpense: Expense = {
-        id: `${subscription.id}-${Date.now()}`,
+        id: generateId('sub-exp-'),
         cardId: subscription.cardId,
         amount: subscription.amount,
         category: 'subscription',

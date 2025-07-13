@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react'
 import { ExpenseForm } from '@/components/expense-form'
 import { ExpenseList } from '@/components/expense-list'
 import { ExpenseStats } from '@/components/expense-stats'
-import { ExpenseChart } from '@/components/expense-chart'
 import { CardManager } from '@/components/card-manager'
-import { BudgetManager } from '@/components/budget-manager'
 import { RecurringExpenseManager } from '@/components/recurring-expense-manager'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PullToRefresh } from '@/components/pull-to-refresh'
@@ -15,7 +13,6 @@ import { QuickAmountPad } from '@/components/quick-amount-pad'
 import { MonthlyTrendChart } from '@/components/monthly-trend-chart'
 import { CardUsageChart } from '@/components/card-usage-chart'
 import { ExpenseHeatmap } from '@/components/expense-heatmap'
-import { InstallmentManager } from '@/components/installment-manager'
 import { MonthlySummaryReport } from '@/components/monthly-summary-report'
 import { CategoryTrendAnalysis } from '@/components/category-trend-analysis'
 import { SpendingGoals } from '@/components/spending-goals'
@@ -24,8 +21,9 @@ import { type Card, type Expense, type Budget, type RecurringExpense, type Insta
 import { processRecurringExpenses } from '@/lib/recurring-utils'
 import { processSubscriptions } from '@/lib/subscription-utils'
 import { haptics } from '@/lib/haptics'
+import { generateId } from '@/lib/id-generator'
 import { Button } from '@/components/ui/button'
-import { Wallet, CreditCard, PlusCircle, BarChart3, Target, Repeat, Receipt, Trophy } from 'lucide-react'
+import { Wallet, CreditCard, PlusCircle, BarChart3, Trophy } from 'lucide-react'
 
 export default function Home() {
   const [cards, setCards] = useLocalStorage<Card[]>('purse-cards', [])
@@ -34,7 +32,7 @@ export default function Home() {
   const [recurringExpenses, setRecurringExpenses] = useLocalStorage<RecurringExpense[]>('purse-recurring', [])
   const [installments, setInstallments] = useLocalStorage<InstallmentPayment[]>('purse-installments', [])
   const [goals, setGoals] = useLocalStorage<SpendingGoal[]>('purse-goals', [])
-  const [activeTab, setActiveTab] = useState<'expenses' | 'cards' | 'add' | 'stats' | 'budgets' | 'installments' | 'goals'>('expenses')
+  const [activeTab, setActiveTab] = useState<'expenses' | 'cards' | 'add' | 'stats' | 'goals'>('expenses')
   const [showAddModal, setShowAddModal] = useState(false)
   const [showQuickPad, setShowQuickPad] = useState(false)
 
@@ -48,7 +46,7 @@ export default function Home() {
       if (newExpenses.length > 0) {
         const processedExpenses = newExpenses.map(exp => ({
           ...exp,
-          id: Date.now().toString() + Math.random(),
+          id: generateId('exp-'),
           createdAt: new Date(),
         }))
         setExpenses(prev => [...prev, ...processedExpenses])
@@ -79,7 +77,7 @@ export default function Home() {
   const handleAddCard = (cardData: Omit<Card, 'id'>) => {
     const newCard: Card = {
       ...cardData,
-      id: Date.now().toString(),
+      id: generateId('card-'),
     }
     setCards([...cards, newCard])
   }
@@ -98,14 +96,14 @@ export default function Home() {
   const handleAddExpense = (expenseData: Omit<Expense, 'id' | 'createdAt'>) => {
     const newExpense: Expense = {
       ...expenseData,
-      id: Date.now().toString(),
+      id: generateId('exp-'),
       createdAt: new Date(),
     }
     
     // If it's an installment, create installment record
     if (expenseData.installment) {
       const newInstallment: InstallmentPayment = {
-        id: Date.now().toString() + '-inst',
+        id: generateId('inst-'),
         originalExpenseId: newExpense.id,
         cardId: expenseData.cardId,
         totalAmount: expenseData.amount,
@@ -138,7 +136,7 @@ export default function Home() {
   const handleAddBudget = (budgetData: Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newBudget: Budget = {
       ...budgetData,
-      id: Date.now().toString(),
+      id: generateId('budget-'),
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -160,7 +158,7 @@ export default function Home() {
   const handleAddRecurring = (recurringData: Omit<RecurringExpense, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newRecurring: RecurringExpense = {
       ...recurringData,
-      id: Date.now().toString(),
+      id: generateId('recurring-'),
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -190,7 +188,7 @@ export default function Home() {
   const handleAddGoal = (goalData: Omit<SpendingGoal, 'id' | 'createdAt' | 'updatedAt' | 'currentAmount'>) => {
     const newGoal: SpendingGoal = {
       ...goalData,
-      id: Date.now().toString(),
+      id: generateId('goal-'),
       currentAmount: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -239,7 +237,7 @@ export default function Home() {
     merchant: string
   }) => {
     const newExpense: Expense = {
-      id: Date.now().toString(),
+      id: generateId('exp-'),
       cardId: data.cardId,
       amount: data.amount,
       category: data.category,
@@ -278,8 +276,6 @@ export default function Home() {
             {activeTab === 'expenses' && '지출 내역'}
             {activeTab === 'cards' && '카드 관리'}
             {activeTab === 'stats' && '통계'}
-            {activeTab === 'budgets' && '예산 관리'}
-            {activeTab === 'installments' && '할부 관리'}
             {activeTab === 'goals' && '지출 목표'}
           </h1>
           <ThemeToggle />
@@ -318,31 +314,6 @@ export default function Home() {
                 >
                   <BarChart3 className="h-5 w-5" />
                   <span className="font-medium">통계</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('budgets')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all touch-manipulation ${
-                    activeTab === 'budgets'
-                      ? 'glass text-primary'
-                      : 'hover:bg-white/50 text-muted-foreground'
-                  }`}
-                >
-                  <Target className="h-5 w-5" />
-                  <span className="font-medium">예산 관리</span>
-                </button>
-                <button
-                  onClick={() => {
-                    haptics.light()
-                    setActiveTab('installments')
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all touch-manipulation ${
-                    activeTab === 'installments'
-                      ? 'glass text-primary'
-                      : 'hover:bg-white/50 text-muted-foreground'
-                  }`}
-                >
-                  <Receipt className="h-5 w-5" />
-                  <span className="font-medium">할부 관리</span>
                 </button>
                 <button
                   onClick={() => {
@@ -407,40 +378,16 @@ export default function Home() {
             
             {activeTab === 'stats' && (
               <div className="space-y-6 animate-fade-in">
-                <ExpenseStats expenses={expenses} budgets={budgets} />
-                <MonthlySummaryReport expenses={expenses} budgets={budgets} />
-                <CategoryTrendAnalysis expenses={expenses} />
-                <ExpenseHeatmap expenses={expenses} />
                 <div className="grid gap-6 lg:grid-cols-2">
                   <MonthlyTrendChart expenses={expenses} />
                   <CardUsageChart expenses={expenses} cards={cards} />
                 </div>
-                <ExpenseChart expenses={expenses} />
+                <MonthlySummaryReport expenses={expenses} budgets={budgets} />
+                <ExpenseHeatmap expenses={expenses} />
+                <CategoryTrendAnalysis expenses={expenses} />
               </div>
             )}
             
-            {activeTab === 'budgets' && (
-              <div className="animate-fade-in">
-                <BudgetManager
-                  budgets={budgets}
-                  expenses={expenses}
-                  onAddBudget={handleAddBudget}
-                  onDeleteBudget={handleDeleteBudget}
-                  onUpdateBudget={handleUpdateBudget}
-                />
-              </div>
-            )}
-            
-            {activeTab === 'installments' && (
-              <div className="animate-fade-in">
-                <InstallmentManager
-                  installments={installments}
-                  cards={cards}
-                  onDeleteInstallment={handleDeleteInstallment}
-                  onToggleInstallment={handleToggleInstallment}
-                />
-              </div>
-            )}
             
             {activeTab === 'cards' && (
               <div className="animate-fade-in">
@@ -489,38 +436,14 @@ export default function Home() {
           
           {activeTab === 'stats' && (
             <div className="space-y-4 animate-fade-in">
-              <ExpenseStats expenses={expenses} budgets={budgets} />
-              <MonthlySummaryReport expenses={expenses} budgets={budgets} />
-              <CategoryTrendAnalysis expenses={expenses} />
-              <ExpenseHeatmap expenses={expenses} />
               <MonthlyTrendChart expenses={expenses} />
               <CardUsageChart expenses={expenses} cards={cards} />
-              <ExpenseChart expenses={expenses} />
+              <MonthlySummaryReport expenses={expenses} budgets={budgets} />
+              <ExpenseHeatmap expenses={expenses} />
+              <CategoryTrendAnalysis expenses={expenses} />
             </div>
           )}
           
-          {activeTab === 'budgets' && (
-            <div className="animate-fade-in">
-              <BudgetManager
-                budgets={budgets}
-                expenses={expenses}
-                onAddBudget={handleAddBudget}
-                onDeleteBudget={handleDeleteBudget}
-                onUpdateBudget={handleUpdateBudget}
-              />
-            </div>
-          )}
-          
-          {activeTab === 'installments' && (
-            <div className="animate-fade-in">
-              <InstallmentManager
-                installments={installments}
-                cards={cards}
-                onDeleteInstallment={handleDeleteInstallment}
-                onToggleInstallment={handleToggleInstallment}
-              />
-            </div>
-          )}
           
           {activeTab === 'cards' && (
             <div className="animate-fade-in">
